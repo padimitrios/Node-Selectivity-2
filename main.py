@@ -13,21 +13,11 @@ import pandas as pd
 PACKET_NUMBER = 16
 NUMBER_OF_NODES = 10
 NUMBER_OF_NODE_VECTORS = 10
-LOWER_BOUND = 100
+# LOWER_BOUND = 100
 NUMBER_OF_FILTERS = 5
 
 # Model constants
 K = 10
-
-# Model A
-A = 1.5
-B = 2.5
-C = -2.5
-THETA = 3
-
-# Model B
-A_2 = 5
-B_2 = -0.5
 
 # Stats variables
 e = 0
@@ -36,11 +26,6 @@ p = 0
 q = 0
 r = 0
 s = 0
-
-# Array containing the data types of the incoming vectors
-TYPE_CHOICES = [
-    'air_pressure', 'air_temperature', 'relative_humidity', 'wind_speed', 'water_vapor_volume_mixing_ratio'
-]
 
 
 class Node:
@@ -66,7 +51,6 @@ class Node:
             filters_vector = []
 
             sequential_rows = retrieve_sequential_rows(df, 10)
-            print(sequential_rows)
             actual_high_low = []
 
             for dim in TYPE_CHOICES:
@@ -143,7 +127,7 @@ class Node:
             vector.append(random_value)
         return vector
 
-    def add_additional_filters(self, num_additional_filters):
+    # def add_additional_filters(self, num_additional_filters):
         """
         @DESC: Add more filters to the filter_vectors_table based on the first filter instance.
                Each dimension in the new filters has a 10% difference from the first filter,
@@ -244,9 +228,6 @@ class Node:
         # If all dimensions with valid ranges are within the specified ranges, append the node and return 1
         self.env_data.append(vector)
         return 1
-
-    def add_future_filters(self, prediction_interval):
-        pass
 
 
 class Filter_Vector:
@@ -547,12 +528,12 @@ def calculate_quantile_regression_for_nodes(nodes, min_max_array):
 
             # Apply quantile regression for low dimension
             quantile_low = sm.QuantReg(
-                Y_low_dim, sm.add_constant(Y_low_dim)).fit(q=0.5)
+                Y_low_dim, sm.add_constant(Y_low_dim)).fit(q=0.5, max_iter=2000)
             low_res = quantile_low.predict([1, min_max_array[0][dim_index]])
 
             # Apply quantile regression for high dimension
             quantile_high = sm.QuantReg(
-                Y_high_dim, sm.add_constant(Y_low_dim)).fit(q=0.5)
+                Y_high_dim, sm.add_constant(Y_low_dim)).fit(q=0.5, max_iter=2000)
             high_res = quantile_high.predict([1, min_max_array[1][dim_index]])
 
             results_dict = {
@@ -598,10 +579,6 @@ def aggregate_statistical_results(overlap_values, future_intervals):
 
     # print(aggregated_results)
     return aggregated_results
-
-
-def aggregate_ml_overlaps_with_st_overlaps(ml_overlaps, st_overlaps):
-    pass
 
 
 def calculate_intervals_overlap(future_intervals, min_max_values_array):
@@ -765,12 +742,12 @@ def aggregate_overlaps(statistical_overlaps, ml_overlaps):
             statistical_overlaps[key] + ml_overlaps[key]) / 2
 
     sorted_overlaps = dict(
-        sorted(aggregated_overlaps.items(), key=lambda item: item[1]))
+        sorted(aggregated_overlaps.items(), key=lambda item: item[1], reverse=True))
 
     return sorted_overlaps
 
 
-def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df):
+def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K):
     '''
       @DESC:    Simulates the selectivity of data in edge computing environments
       @PARAMS:  env (simpy.Environment) -> the simulation environment
@@ -782,6 +759,9 @@ def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df):
 
     # array that will store an interval of random vectors
     random_vector_array = []
+    our_model_selections = []
+    random_model = []
+    min_overlaps = []
 
     for _ in range(PACKET_NUMBER):
 
@@ -795,7 +775,7 @@ def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df):
         #   if candidate_nodes_index != random_nodes_index:
         #     break
 
-        random_vector = random_node.calculate_mean_std()
+        random_vector = generate_random_multivariable_vector(data_df)
 
         # reset interval table
         if len(random_vector_array) < PACKET_THRESHOLD:
@@ -839,17 +819,25 @@ def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df):
             aggregated_result = aggregate_overlaps(
                 statistical_overlap, ml_overlaps)
             print(aggregated_result)
-            # print(future_intervals)
-            # print(quantile_reg_results)
+            max_list = []
+            random_list = []
 
-            # aggregated_overlaps, aggregated_intervals, aggregated_quantile_coefs = aggregate_results(nodes, node_overlaps, future_intervals, quantile_reg_results)
+            for i, key in enumerate(aggregated_result.keys()):
+                if i < K:
+                    max_list.append(aggregated_result[key])
+                    random_list.append(
+                        aggregated_result[random.choice(list(aggregated_result.keys()))])
+
+            random_model.append(random_list)
+            our_model_selections.append(max_list)
+            min_val = list(aggregated_result.values())[-1]
+            min_overlaps.append(min_val)
+
+            # print(random_model)
+            # print(our_model_selections)
+            # print(min_overlaps)
             # print(future_intervals)
             # print(quantile_reg_results)
-            break
-            # print()
-            # print("Aggregated Overlaps:", aggregated_overlaps)
-            # print("Aggregated Future Intervals:", aggregated_intervals)
-            # print("Aggregated Quantile Regression Coefficients:", aggregated_quantile_coefs)
 
             # if closest_node_index == candidate_nodes_index:
             #   print('match found on candidate node')
@@ -884,23 +872,53 @@ def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df):
     # print("Nodes partially matched:", r)
     # print("Nodes partially unmatched:", s)
     # print("Nodes went to candidate:", e)
+    df = pd.DataFrame({
+        'random_model': random_model,
+        'our_model_selections': our_model_selections,
+        'min_overlaps': min_overlaps
+    })
+
+    # Save the DataFrame to a CSV file in append mode
+    df.to_csv('results.csv', mode='a', header=False, index=False)
     yield env.timeout(1)
 
 
 if __name__ == '__main__':
     constants_df = constants_df = pd.read_csv('constants.csv')
-    data_df = pd.read_csv(
-        'Cop_dataset.csv', usecols=TYPE_CHOICES)
-    data_df = data_df.dropna(how='all')
-
-    W = 10
 
     for index, row in constants_df.iterrows():
+
+        if row['DIM'] == 5:
+            TYPE_CHOICES = [
+                'air_pressure', 'air_temperature', 'relative_humidity', 'wind_speed', 'water_vapor_volume_mixing_ratio'
+            ]
+        elif row['DIM'] == 10:
+            TYPE_CHOICES = [
+                'air_pressure', 'air_temperature', 'relative_humidity', 'wind_speed', 'water_vapor_volume_mixing_ratio',
+                'air_pressure_total_uncertainty', 'air_temperature_total_uncertainty', 'air_temperature_random_uncertainty',
+                'relative_humidity_total_uncertainty', 'relative_humidity_systematic_uncertainty'
+            ]
+        else:
+            TYPE_CHOICES = [
+                'air_pressure', 'air_temperature', 'relative_humidity', 'wind_speed', 'water_vapor_volume_mixing_ratio',
+                'air_pressure_total_uncertainty', 'air_temperature_total_uncertainty', 'air_temperature_random_uncertainty',
+                'relative_humidity_total_uncertainty', 'relative_humidity_systematic_uncertainty', 'relative_humidity_post_processing_radiation_correction',
+                'wind_speed_total_uncertainty', 'wind_from_direction', 'wind_from_direction_total_uncertainty', 'eastward_wind_component', 'northward_wind_component',
+                'shortwave_radiation_total_uncertainty', 'vertical_speed_of_radiosonde', 'geopotential_height', 'frost_point_temperature'
+            ]
+
+        data_df = pd.read_csv(
+            'Cop_dataset.csv', usecols=TYPE_CHOICES)
+        data_df = data_df.dropna(how='all')
+        data_df.fillna(data_df.mean(), inplace=True)
+
+        W = 10
+
         # Update the constants for the current row
         PACKET_NUMBER = row['PACKET_NUMBER']
         NUMBER_OF_NODES = row['NUMBER_OF_NODES']
         NUMBER_OF_NODE_VECTORS = row['NUMBER_OF_NODE_VECTORS']
-        LOWER_BOUND = row['LOWER_BOUND']
+        DIM = row['DIM']
         NUMBER_OF_FILTERS = row['NUMBER_OF_FILTERS']
         PACKET_THRESHOLD = row['PACKET_THRESHOLD']
         K = row['K']
@@ -910,7 +928,7 @@ if __name__ == '__main__':
         print(f"PACKET_NUMBER: {PACKET_NUMBER}")
         print(f"NUMBER_OF_NODES: {NUMBER_OF_NODES}")
         print(f"NUMBER_OF_NODE_VECTORS: {NUMBER_OF_NODE_VECTORS}")
-        print(f"LOWER_BOUND: {LOWER_BOUND}")
+        print(f"DIM: {DIM}")
         print(f"NUMBER_OF_FILTERS: {NUMBER_OF_FILTERS}")
         print(f"PACKET_THRESHOLD: {PACKET_THRESHOLD}")
         print(f"K: {K}")
@@ -931,5 +949,5 @@ if __name__ == '__main__':
 
         # Run the simulation for PACKET_NUMBER packets
         env.process(data_selectivity(
-            env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df))
+            env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K))
         env.run(until=PACKET_NUMBER)
