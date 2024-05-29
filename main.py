@@ -877,8 +877,8 @@ def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, DI
     # print("Nodes partially unmatched:", s)
     # print("Nodes went to candidate:", e)
     df = pd.DataFrame({
-        'random_model': random_model,
         'our_model_selections': our_model_selections,
+        'random_model': random_model,
         'min_overlaps': min_overlaps,
         'time_elapsed': t,
         'dimensions': DIM,
