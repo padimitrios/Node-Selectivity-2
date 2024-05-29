@@ -528,12 +528,12 @@ def calculate_quantile_regression_for_nodes(nodes, min_max_array):
 
             # Apply quantile regression for low dimension
             quantile_low = sm.QuantReg(
-                Y_low_dim, sm.add_constant(Y_low_dim)).fit(q=0.5, max_iter=2000)
+                Y_low_dim, sm.add_constant(Y_low_dim)).fit(q=0.5, max_iter=10000)
             low_res = quantile_low.predict([1, min_max_array[0][dim_index]])
 
             # Apply quantile regression for high dimension
             quantile_high = sm.QuantReg(
-                Y_high_dim, sm.add_constant(Y_low_dim)).fit(q=0.5, max_iter=2000)
+                Y_high_dim, sm.add_constant(Y_low_dim)).fit(q=0.5, max_iter=10000)
             high_res = quantile_high.predict([1, min_max_array[1][dim_index]])
 
             results_dict = {
@@ -747,7 +747,7 @@ def aggregate_overlaps(statistical_overlaps, ml_overlaps):
     return sorted_overlaps
 
 
-def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K):
+def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, DIM):
     '''
       @DESC:    Simulates the selectivity of data in edge computing environments
       @PARAMS:  env (simpy.Environment) -> the simulation environment
@@ -762,6 +762,7 @@ def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K):
     our_model_selections = []
     random_model = []
     min_overlaps = []
+    time_elapsed = []
 
     for _ in range(PACKET_NUMBER):
 
@@ -818,7 +819,7 @@ def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K):
             # print(ml_overlaps)
             aggregated_result = aggregate_overlaps(
                 statistical_overlap, ml_overlaps)
-            print(aggregated_result)
+
             max_list = []
             random_list = []
 
@@ -832,6 +833,8 @@ def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K):
             our_model_selections.append(max_list)
             min_val = list(aggregated_result.values())[-1]
             min_overlaps.append(min_val)
+            max_list = []
+            random_list = []
 
             # print(random_model)
             # print(our_model_selections)
@@ -841,7 +844,8 @@ def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K):
 
             # if closest_node_index == candidate_nodes_index:
             #   print('match found on candidate node')
-            #   end_time = time.time()
+            end_time = time.time()
+            t = end_time - start_time
             #   e += 1
 
             #   # update the filters table
@@ -875,7 +879,9 @@ def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K):
     df = pd.DataFrame({
         'random_model': random_model,
         'our_model_selections': our_model_selections,
-        'min_overlaps': min_overlaps
+        'min_overlaps': min_overlaps,
+        'time_elapsed': t,
+        'dimensions': DIM,
     })
 
     # Save the DataFrame to a CSV file in append mode
@@ -949,5 +955,5 @@ if __name__ == '__main__':
 
         # Run the simulation for PACKET_NUMBER packets
         env.process(data_selectivity(
-            env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K))
+            env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, DIM))
         env.run(until=PACKET_NUMBER)
