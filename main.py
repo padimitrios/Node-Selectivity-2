@@ -764,7 +764,7 @@ def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, DI
     min_overlaps = []
     time_elapsed = []
 
-    for _ in range(PACKET_NUMBER):
+    for _ in range((PACKET_NUMBER + 1)):
 
         start_time = time.time()
 
