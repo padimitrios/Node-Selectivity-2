@@ -60,7 +60,7 @@ df = pd.DataFrame({
 
 - **our_model_selections**: Number of selections made by our model.
 - **random_model**: Number of selections made by the random model.
-- **min_overlaps**: Minimum number of overlaps between selections.
+- **min_overlaps**: Minimum value of overlaps between selections.
 - **time_elapsed**: Time taken for the model to make selections.
 - **dimensions**: Dimensionality of the input vectors used in the experiment.
 
