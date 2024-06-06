@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Step 1: Load the data
-data = pd.read_csv('test.csv', header=None, names=[
+data = pd.read_csv('200N_5K.csv', header=None, names=[
                    'model', 'random', 'worst_overlap', 'time', 'dimension'])
 
 # Step 2: Parse the arrays from the strings
@@ -70,7 +70,7 @@ plt.xticks(dimensions)
 
 
 # Save the figure as .eps
-plt.savefig('Figures/overlap_analysis_dimensions.eps',
+plt.savefig('Figures/overlap_analysis_dimensions_200N_5K.eps',
             format='eps', bbox_inches="tight")
 
 # Display the plot
