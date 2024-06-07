@@ -747,7 +747,7 @@ def aggregate_overlaps(statistical_overlaps, ml_overlaps):
     return sorted_overlaps
 
 
-def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, DIM):
+def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, NOD):
     '''
       @DESC:    Simulates the selectivity of data in edge computing environments
       @PARAMS:  env (simpy.Environment) -> the simulation environment
@@ -762,14 +762,12 @@ def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, DI
     our_model_selections = []
     random_model = []
     min_overlaps = []
-    time_elapsed = []
+    time_elapsed = 0
 
     for _ in range((PACKET_NUMBER + 1)):
 
-        start_time = time.time()
-
-        random_node, random_nodes_index = random_node_choice(nodes)
-        candidate_node, candidate_nodes_index = random_node_choice(nodes)
+        # random_node, random_nodes_index = random_node_choice(nodes)
+        # candidate_node, candidate_nodes_index = random_node_choice(nodes)
         # # duplicate check
         # while True:
         #   candidate_node, candidate_nodes_index = random_node_choice(nodes)
@@ -783,6 +781,8 @@ def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, DI
             random_vector_array.append(random_vector)
             continue
         else:
+
+            start_time = time.time()
 
             min_max_values_array = calculate_min_max_values(
                 random_vector_array)
@@ -845,52 +845,27 @@ def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, DI
             # if closest_node_index == candidate_nodes_index:
             #   print('match found on candidate node')
             end_time = time.time()
-            t = end_time - start_time
-            #   e += 1
+            time_elapsed = end_time - start_time
 
-            #   # update the filters table
-            #   add_future_filters(random_vector, nodes)
-
-            #   elapsed_time = end_time - start_time
-            #   t.append(elapsed_time)
-            #   update_stats(candidate_node, random_vector)
-            #   print(f"Elapsed time: {elapsed_time} seconds")
-            # else:
-            #   #select closest node and add the vector
-            #   # update the filters table
-            #   add_future_filters(random_vector, nodes)
-            #   # add the future filters
-
-            #   end_time = time.time()
-
-            #   # Calculate the elapsed time
-            #   elapsed_time = end_time - start_time
-            #   t.append(elapsed_time)
-            #   print(f"Elapsed time: {elapsed_time} seconds")
             random_vector_array = []
             random_vector_array.append(random_vector)
 
-    # print(t)
-    # print("Nodes fully matched:", p)
-    # print("Nodes fully unmatched:", q)
-    # print("Nodes partially matched:", r)
-    # print("Nodes partially unmatched:", s)
-    # print("Nodes went to candidate:", e)
-    df = pd.DataFrame({
-        'our_model_selections': our_model_selections,
-        'random_model': random_model,
-        'min_overlaps': min_overlaps,
-        'time_elapsed': t,
-        'dimensions': DIM,
-    })
+        df = pd.DataFrame({
+            'our_model_selections': our_model_selections,
+            'random_model': random_model,
+            'min_overlaps': min_overlaps,
+            'time_elapsed': time_elapsed,
+            'nodes': NOD,
+        })
 
-    # Save the DataFrame to a CSV file in append mode
-    df.to_csv('results.csv', mode='a', header=False, index=False)
+        # Save the DataFrame to a CSV file in append mode
+        df.to_csv('results_2.csv', mode='a', header=False, index=False)
+
     yield env.timeout(1)
 
 
 if __name__ == '__main__':
-    constants_df = constants_df = pd.read_csv('constants.csv')
+    constants_df = constants_df = pd.read_csv('constants_2.csv')
 
     for index, row in constants_df.iterrows():
 
@@ -953,5 +928,5 @@ if __name__ == '__main__':
 
         # Run the simulation for PACKET_NUMBER packets
         env.process(data_selectivity(
-            env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, DIM))
+            env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, NUMBER_OF_NODES))
         env.run(until=PACKET_NUMBER)
