@@ -918,8 +918,6 @@ if __name__ == '__main__':
         data_df = data_df.dropna(how='all')
         data_df.fillna(data_df.mean(), inplace=True)
 
-        W = 10
-
         # Update the constants for the current row
         PACKET_NUMBER = row['PACKET_NUMBER']
         NUMBER_OF_NODES = row['NUMBER_OF_NODES']
@@ -945,7 +943,7 @@ if __name__ == '__main__':
         # generate the nodes and populate them with data
         for i in range(NUMBER_OF_NODES):
             node = Node(env)
-            node.generate_filters(env, data_df, W)
+            node.generate_filters(env, data_df, NUMBER_OF_FILTERS)
             node.populate_env_data(NUMBER_OF_NODE_VECTORS, data_df)
             # node.add_additional_filters(num_additional_filters=4)
             # for filter in node.filter_vectors_table:
