@@ -747,7 +747,7 @@ def aggregate_overlaps(statistical_overlaps, ml_overlaps):
     return sorted_overlaps
 
 
-def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, NOD):
+def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, NOD, NUMBER_OF_FILTERS):
     '''
       @DESC:    Simulates the selectivity of data in edge computing environments
       @PARAMS:  env (simpy.Environment) -> the simulation environment
@@ -764,7 +764,7 @@ def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, NO
     min_overlaps = []
     time_elapsed = 0
 
-    for _ in range((PACKET_NUMBER + 1)):
+    for ii in range((PACKET_NUMBER + 1)):
 
         # random_node, random_nodes_index = random_node_choice(nodes)
         # candidate_node, candidate_nodes_index = random_node_choice(nodes)
@@ -779,8 +779,11 @@ def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, NO
         # reset interval table
         if len(random_vector_array) < PACKET_THRESHOLD:
             random_vector_array.append(random_vector)
+            print('cont')
             continue
         else:
+            print('ent')
+            print(ii)
 
             start_time = time.time()
 
@@ -850,22 +853,23 @@ def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, NO
             random_vector_array = []
             random_vector_array.append(random_vector)
 
-        df = pd.DataFrame({
-            'our_model_selections': our_model_selections,
-            'random_model': random_model,
-            'min_overlaps': min_overlaps,
-            'time_elapsed': time_elapsed,
-            'nodes': NOD,
-        })
+            df = pd.DataFrame({
+                'our_model_selections': our_model_selections,
+                'random_model': random_model,
+                'min_overlaps': min_overlaps,
+                'time_elapsed': time_elapsed,
+                'nodes': NOD,
+                'number_of_filters': NUMBER_OF_FILTERS,
+            })
 
-        # Save the DataFrame to a CSV file in append mode
-        df.to_csv('results_2.csv', mode='a', header=False, index=False)
+            # Save the DataFrame to a CSV file in append mode
+            df.to_csv('results_4.csv', mode='a', header=False, index=False)
 
     yield env.timeout(1)
 
 
 if __name__ == '__main__':
-    constants_df = constants_df = pd.read_csv('constants_2.csv')
+    constants_df = constants_df = pd.read_csv('constants_3.csv')
 
     for index, row in constants_df.iterrows():
 
@@ -928,5 +932,5 @@ if __name__ == '__main__':
 
         # Run the simulation for PACKET_NUMBER packets
         env.process(data_selectivity(
-            env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, NUMBER_OF_NODES))
+            env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, NUMBER_OF_NODES, NUMBER_OF_FILTERS))
         env.run(until=PACKET_NUMBER)
