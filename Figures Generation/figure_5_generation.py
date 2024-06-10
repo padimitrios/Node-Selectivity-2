@@ -18,7 +18,6 @@ def extract_overlaps(file_name, number_of_nodes):
     averages = {}
 
     for num_filters in [10, 30, 50]:
-
         data_filters = data_filtered[data_filtered['filters'] == num_filters]
 
         best_case = np.mean([lst[0] for lst in data_filters['model']])
@@ -47,17 +46,18 @@ overlaps_200 = extract_overlaps('results_4.csv', 200)
 # Plotting for 100 nodes
 plt.figure(figsize=(10, 5))
 colors = ['b', 'g', 'r']
-markers = ['-o', '-x', '-^', '-s']
-for i, (num_filters, overlap_dict) in enumerate(overlaps_100.items()):
-    plt.plot([10, 30, 50], [overlap_dict['best_case']] * 3, markers[i],
-             color=colors[i], label=f'Best case: {num_filters}')
-    plt.plot([10, 30, 50], [overlap_dict['our_selection']] * 3, markers[i],
-             color=colors[i], linestyle='--', label=f'Our Selection: {num_filters}')
-    plt.plot([10, 30, 50], [overlap_dict['random_model']] * 3, markers[i],
-             color=colors[i], linestyle='-.', label=f'Random Model: {num_filters}')
-    plt.plot([10, 30, 50], [overlap_dict['worst_case']] * 3, markers[i],
-             color=colors[i], linestyle=':', label=f'Worst Case: {num_filters}')
+markers = ['o', 'x', '^', 's']
+linestyles = ['-', '--', '-.', ':']
 
+for i, (num_filters, overlap_dict) in enumerate(overlaps_100.items()):
+    plt.plot([10, 30, 50], [overlap_dict['best_case']] * 3, linestyle=linestyles[i], marker=markers[i],
+             color=colors[i], label=f'Best case: {num_filters}')
+    plt.plot([10, 30, 50], [overlap_dict['our_selection']] * 3, linestyle=linestyles[i], marker=markers[i],
+             color=colors[i], label=f'Our Selection: {num_filters}')
+    plt.plot([10, 30, 50], [overlap_dict['random_model']] * 3, linestyle=linestyles[i], marker=markers[i],
+             color=colors[i], label=f'Random Model: {num_filters}')
+    plt.plot([10, 30, 50], [overlap_dict['worst_case']] * 3, linestyle=linestyles[i], marker=markers[i],
+             color=colors[i], label=f'Worst Case: {num_filters}')
 
 plt.yticks(np.arange(4, 5.6, step=0.1))
 plt.xticks([10, 30, 50])
@@ -66,23 +66,23 @@ plt.ylabel('Average Overlap')
 plt.grid(True)
 plt.tight_layout(rect=[0, 0, 0.75, 1])  # Adjust the layout
 plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-plt.show()
 plt.savefig('Figures/plot_100_nodes_diff_num_filters.eps',
             format='eps', bbox_inches="tight")
+plt.show()
 plt.close()
 
 
 # Plotting for 200 nodes
 plt.figure(figsize=(10, 5))
 for i, (num_filters, overlap_dict) in enumerate(overlaps_200.items()):
-    plt.plot([10, 30, 50], [overlap_dict['best_case']] * 3, markers[i],
+    plt.plot([10, 30, 50], [overlap_dict['best_case']] * 3, linestyle=linestyles[i], marker=markers[i],
              color=colors[i], label=f'Best case: {num_filters}')
-    plt.plot([10, 30, 50], [overlap_dict['our_selection']] * 3, markers[i],
-             color=colors[i], linestyle='--', label=f'Our Selection: {num_filters}')
-    plt.plot([10, 30, 50], [overlap_dict['random_model']] * 3, markers[i],
-             color=colors[i], linestyle='-.', label=f'Random Model: {num_filters}')
-    plt.plot([10, 30, 50], [overlap_dict['worst_case']] * 3, markers[i],
-             color=colors[i], linestyle=':', label=f'Worst Case: {num_filters}')
+    plt.plot([10, 30, 50], [overlap_dict['our_selection']] * 3, linestyle=linestyles[i], marker=markers[i],
+             color=colors[i], label=f'Our Selection: {num_filters}')
+    plt.plot([10, 30, 50], [overlap_dict['random_model']] * 3, linestyle=linestyles[i], marker=markers[i],
+             color=colors[i], label=f'Random Model: {num_filters}')
+    plt.plot([10, 30, 50], [overlap_dict['worst_case']] * 3, linestyle=linestyles[i], marker=markers[i],
+             color=colors[i], label=f'Worst Case: {num_filters}')
 
 plt.yticks(np.arange(4, 5.6, step=0.1))
 plt.xticks([10, 30, 50])
@@ -91,7 +91,7 @@ plt.ylabel('Average Overlap')
 plt.grid(True)
 plt.tight_layout(rect=[0, 0, 0.75, 1])  # Adjust the layout
 plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-plt.show()
 plt.savefig('Figures/plot_200_nodes_diff_num_filters.eps',
             format='eps', bbox_inches="tight")
+plt.show()
 plt.close()
