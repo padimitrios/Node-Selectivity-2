@@ -763,27 +763,17 @@ def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, NO
     random_model = []
     min_overlaps = []
     time_elapsed = 0
+    results = []
 
     for ii in range((PACKET_NUMBER + 1)):
-
-        # random_node, random_nodes_index = random_node_choice(nodes)
-        # candidate_node, candidate_nodes_index = random_node_choice(nodes)
-        # # duplicate check
-        # while True:
-        #   candidate_node, candidate_nodes_index = random_node_choice(nodes)
-        #   if candidate_nodes_index != random_nodes_index:
-        #     break
 
         random_vector = generate_random_multivariable_vector(data_df)
 
         # reset interval table
         if len(random_vector_array) < PACKET_THRESHOLD:
             random_vector_array.append(random_vector)
-            print('cont')
             continue
         else:
-            print('ent')
-            print(ii)
 
             start_time = time.time()
 
@@ -836,8 +826,6 @@ def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, NO
             our_model_selections.append(max_list)
             min_val = list(aggregated_result.values())[-1]
             min_overlaps.append(min_val)
-            max_list = []
-            random_list = []
 
             # print(random_model)
             # print(our_model_selections)
@@ -850,20 +838,24 @@ def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, NO
             end_time = time.time()
             time_elapsed = end_time - start_time
 
-            random_vector_array = []
-            random_vector_array.append(random_vector)
-
-            df = pd.DataFrame({
-                'our_model_selections': our_model_selections,
-                'random_model': random_model,
-                'min_overlaps': min_overlaps,
+            result = {
+                'our_model_selections': max_list,
+                'random_model': random_list,
+                'min_overlaps': min_val,
                 'time_elapsed': time_elapsed,
                 'nodes': NOD,
                 'number_of_filters': NUMBER_OF_FILTERS,
-            })
+            }
+            results.append(result)
 
-            # Save the DataFrame to a CSV file in append mode
-            df.to_csv('results_4.csv', mode='a', header=False, index=False)
+            max_list = []
+            random_list = []
+            random_vector_array = []
+            random_vector_array.append(random_vector)
+
+    # Convert results list to DataFrame and save to CSV
+    df = pd.DataFrame(results)
+    df.to_csv('results_4.csv', mode='a', header=False, index=False)
 
     yield env.timeout(1)
 
