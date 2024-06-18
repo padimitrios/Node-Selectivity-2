@@ -256,17 +256,17 @@ class Filter:
 
 def retrieve_sequential_rows(df, quantity, start_index=None):
     '''
-    @DESC: Retrieve a sequence of 10 rows from the DataFrame starting from the specified index.
+    @DESC: Retrieve a sequence of quantity rows from the DataFrame starting from the specified index.
     @PARAMS: df (DataFrame) -> The DataFrame to retrieve rows from.
                 quantity (int) -> The number of rows to retrieve.
                 start_index (int) -> The starting index for the sequence of rows.
-    @RET: DataFrame -> The sequence of 10 rows starting from the specified index.
+    @RET: DataFrame -> The sequence of quantity rows starting from the specified index.
     '''
     if start_index is None:
         # Choose a random starting index
         start_index = random.randint(0, len(df) - quantity)
 
-    end_index = start_index + 10  # Calculate the end index
+    end_index = start_index + quantity
 
     return df.iloc[start_index:end_index]
 
@@ -765,7 +765,7 @@ def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, NO
     time_elapsed = 0
     results = []
 
-    for ii in range((PACKET_NUMBER + 1)):
+    for _ in range((PACKET_NUMBER + 1)):
 
         random_vector = generate_random_multivariable_vector(data_df)
 
@@ -844,7 +844,7 @@ def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, NO
                 'min_overlaps': min_val,
                 'time_elapsed': time_elapsed,
                 'nodes': NOD,
-                'number_of_filters': NUMBER_OF_FILTERS,
+                'k': K,
             }
             results.append(result)
 
@@ -855,13 +855,13 @@ def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, NO
 
     # Convert results list to DataFrame and save to CSV
     df = pd.DataFrame(results)
-    df.to_csv('results_4.csv', mode='a', header=False, index=False)
+    df.to_csv('results_5.csv', mode='a', header=False, index=False)
 
     yield env.timeout(1)
 
 
 if __name__ == '__main__':
-    constants_df = constants_df = pd.read_csv('constants_3.csv')
+    constants_df = constants_df = pd.read_csv('constants_4.csv')
 
     for index, row in constants_df.iterrows():
 
