@@ -53,14 +53,20 @@ fig = plt.figure(figsize=(10, 6))
 ax = fig.add_subplot(111, projection='3d')
 
 # Plot the surface
-ax.plot_surface(K_mesh, Theta_mesh, Z, cmap='viridis')
+surf = ax.plot_surface(K_mesh, Theta_mesh, Z, cmap='viridis')
 
-# Set the labels
-ax.set_xlabel('K Values')
-ax.set_ylabel('Theta Values')
-ax.set_zlabel('EC Nodes Above Theta')
+# Set the labels with adjusted font sizes
+ax.set_xlabel('K Values', fontsize=14)
+ax.set_ylabel('Theta Values', fontsize=14)
+ax.set_zlabel('Nodes Above Theta', fontsize=14)
+
+# Set tick parameters with adjusted label sizes
+ax.tick_params(axis='both', which='major', labelsize=12)
 
 # Rotate the plot so that K value of 5 is on the outside
 ax.view_init(elev=20, azim=130)
+
+# Save the plot as EPS with a custom filename
 plt.savefig('Figures/nodes_above_theta.eps', format='eps', bbox_inches="tight")
+
 plt.show()
