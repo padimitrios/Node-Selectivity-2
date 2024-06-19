@@ -43,8 +43,8 @@ plt.figure(figsize=(12, 6))
 
 # Plotting with circles instead of default lines
 plt.plot(dimensions, best_case, marker='o', linestyle='-', color='g', label='Best Case')
-plt.plot(dimensions, our_model_avgs, marker='o', linestyle='-', color='b', label='Our Model Average')
-plt.plot(dimensions, random_model_avgs, marker='o', linestyle='-', color='m', label='Random Model Average')
+plt.plot(dimensions, our_model_avgs, marker='o', linestyle='-', color='b', label='Proposed method')
+plt.plot(dimensions, random_model_avgs, marker='o', linestyle='-', color='m', label='Random Migration Model')
 plt.plot(dimensions, worst_overlaps, marker='o', linestyle='-', color='r', label='Worst Case')
 
 # Setting labels for x and y axis with larger font sizes
