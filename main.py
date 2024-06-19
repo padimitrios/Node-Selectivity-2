@@ -747,7 +747,7 @@ def aggregate_overlaps(statistical_overlaps, ml_overlaps):
     return sorted_overlaps
 
 
-def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, NOD, NUMBER_OF_FILTERS):
+def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, NOD, NUMBER_OF_FILTERS, DIM):
     '''
       @DESC:    Simulates the selectivity of data in edge computing environments
       @PARAMS:  env (simpy.Environment) -> the simulation environment
@@ -844,7 +844,8 @@ def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, NO
                 'min_overlaps': min_val,
                 'time_elapsed': time_elapsed,
                 'nodes': NOD,
-                'k': K,
+                'number_of_filters': NUMBER_OF_FILTERS,
+                'DIM': DIM,
             }
             results.append(result)
 
@@ -855,7 +856,7 @@ def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, NO
 
     # Convert results list to DataFrame and save to CSV
     df = pd.DataFrame(results)
-    df.to_csv('results_5.csv', mode='a', header=False, index=False)
+    df.to_csv('results_2_2.csv', mode='a', header=False, index=False)
 
     yield env.timeout(1)
 
@@ -924,5 +925,5 @@ if __name__ == '__main__':
 
         # Run the simulation for PACKET_NUMBER packets
         env.process(data_selectivity(
-            env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, NUMBER_OF_NODES, NUMBER_OF_FILTERS))
+            env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, NUMBER_OF_NODES, NUMBER_OF_FILTERS, DIM))
         env.run(until=PACKET_NUMBER)
