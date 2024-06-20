@@ -18,7 +18,7 @@ data_filtered_500 = data[data['nodes'] == 500]
 
 # Step 4: Average time for each node batch with communication cost
 def adjusted_time(avg_time, nodes):
-    return (avg_time) + (nodes * 0.0002)
+    return (avg_time / nodes) + (nodes * 0.0002)
 
 our_model_avg_100 = adjusted_time(np.mean(data_filtered_100['time'].tolist()), 100)
 our_model_avg_200 = adjusted_time(np.mean(data_filtered_200['time'].tolist()), 200)
@@ -26,7 +26,7 @@ our_model_avg_300 = adjusted_time(np.mean(data_filtered_300['time'].tolist()), 3
 our_model_avg_400 = adjusted_time(np.mean(data_filtered_400['time'].tolist()), 400)
 our_model_avg_500 = adjusted_time(np.mean(data_filtered_500['time'].tolist()), 500)
 
-random_model = 0.3
+random_model = 0.02
 
 # Step 5: Plot the results
 nodes = [100, 200, 300, 400, 500]

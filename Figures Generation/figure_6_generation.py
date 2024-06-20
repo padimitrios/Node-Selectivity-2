@@ -18,7 +18,7 @@ data['random'] = data['random'].apply(
 
 def calculate_theta(values):
     best_option = values[0]  # First element is the best option
-    theta = best_option * 0.96  # 2% less than the best option
+    theta = best_option * 0.96  # 4% less than the best option
     return theta
 
 
