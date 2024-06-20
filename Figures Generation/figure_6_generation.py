@@ -16,7 +16,7 @@ data['random'] = data['random'].apply(
 # Define theta calculation function
 def calculate_theta(values, k):
     best_option = values[0]  # First element is the best option
-    theta = best_option * 0.99 - (k * 0.0455)  # Adjusting to ensure higher k lowers theta
+    theta = best_option * 0.98 - (k * 0.025)  # Adjusting to ensure higher k lowers theta
     return theta
 
 # Initialize lists for K, theta values, and node counts
@@ -55,6 +55,10 @@ Z = np.zeros_like(K_mesh, dtype=float)
 for i in range(len(K_values)):
     for j in range(len(theta_values)):
         Z[j, i] = sum(data[data['k'] == K_values[i]]['model'].apply(lambda x: sum(v > theta_values[j] for v in x)))/len(data[data['k'] == K_values[i]])
+
+print(Z)
+print(theta_values)
+print(K_values)
 
 # Plotting
 fig = plt.figure(figsize=(10, 6))
