@@ -76,7 +76,7 @@ ax.set_zlabel('Nodes Selected', fontsize=12)
 ax.tick_params(axis='both', which='major', labelsize=11)
 
 # Rotate the plot to better visualize the relationship
-ax.view_init(elev=20, azim=130)
+ax.view_init(elev=25, azim=140)
 
 # Save the plot as EPS with a custom filename
 plt.savefig('Figures/nodes_above_theta.eps', format='eps', bbox_inches="tight")
