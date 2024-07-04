@@ -34,6 +34,10 @@ class Node:
       '''
 
     def __init__(self, env):
+        """
+        @DESC: Initialize the Node object with the provided environment.
+        @PARAMS: env (obj) -> The simpy environment object.
+        """
         self.env = env
         # This array contains the min and max values of each type
         self.filter_vectors_table = []
@@ -306,6 +310,11 @@ def random_node_choice(nodes):
 
 
 def calculate_min_max_values(random_vector_array):
+    """
+    @DESC:   Calculate the minimum and maximum values for each dimension in the input array.
+    @PARAMS: random_vector_array (list) -> The input array containing random vectors.
+    @RET:    list -> A list containing the minimum and maximum values for each dimension.
+    """
     min_max_values_array = []
 
     # Transpose the input array
@@ -410,6 +419,14 @@ def calculate_node_overlap(filter_vectors_table, min_max_values_array):
 
 
 def calculate_element_overlap(min_filter, max_filter, min_vector_val, max_vector_val):
+    """
+    @DESC:   Calculate the overlap between a filter and the corresponding element in the random_vector.
+    @PARAMS: min_filter (float) -> The minimum value of the filter.
+             max_filter (float) -> The maximum value of the filter.
+             min_vector_val (float) -> The minimum value of the element.
+             max_vector_val (float) -> The maximum value of the element.
+    @RET:    float -> The calculated overlap value for the filter and element.
+    """
     # Ensure that the min_val and max_val are valid
     if max(min_filter, min_vector_val) < min(max_filter, max_vector_val):
         intersection_tuple = [
@@ -427,6 +444,11 @@ def calculate_element_overlap(min_filter, max_filter, min_vector_val, max_vector
 
 
 def calculate_future_intervals(nodes):
+    """
+    @DESC: Calculate the future intervals for each node based on the filter vectors.
+    @PARAMS: nodes (list) -> List of nodes containing filter vectors.
+    @RET: dict -> Dictionary containing the prediction intervals for each node and dimension.
+    """
     # Set the desired probability
     p = 0.90
 
@@ -553,6 +575,12 @@ def calculate_quantile_regression_for_nodes(nodes, min_max_array):
 
 
 def aggregate_statistical_results(overlap_values, future_intervals):
+    """
+    @DESC: Aggregate the results of statistical overlap and future intervals.
+    @PARAMS: overlap_values (dict) -> Dictionary containing overlap values for each node.
+             future_intervals (dict) -> Dictionary containing future intervals for each node.
+    @RET: dict -> Dictionary containing aggregated results for each node.
+    """
 
     # Initialize an empty dictionary to store aggregated results
     aggregated_results = {}
@@ -862,6 +890,9 @@ def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, NO
 
 
 if __name__ == '__main__':
+    """
+    @DESC: Main function to run the simulation with different sets of constants.
+    """
     constants_df = constants_df = pd.read_csv('constants_4.csv')
 
     for index, row in constants_df.iterrows():
