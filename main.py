@@ -884,7 +884,7 @@ def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, NO
 
     # Convert results list to DataFrame and save to CSV
     df = pd.DataFrame(results)
-    df.to_csv('results_2_2.csv', mode='a', header=False, index=False)
+    df.to_csv('Results/results_2_2.csv', mode='a', header=False, index=False)
 
     yield env.timeout(1)
 
@@ -893,7 +893,7 @@ if __name__ == '__main__':
     """
     @DESC: Main function to run the simulation with different sets of constants.
     """
-    constants_df = constants_df = pd.read_csv('constants_4.csv')
+    constants_df = constants_df = pd.read_csv('Constants/constants_4.csv')
 
     for index, row in constants_df.iterrows():
 
