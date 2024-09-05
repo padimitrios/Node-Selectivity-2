@@ -852,6 +852,9 @@ def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, NO
 
             random_model.append(random_list)
             our_model_selections.append(max_list)
+            greedy_list = random_model[0] + our_model_selections[0]
+            # Select 5 random numbers from the combined list for the greedy approach
+            greedy_selection = random.sample(greedy_list, len(our_model_selections[0]))
             min_val = list(aggregated_result.values())[-1]
             min_overlaps.append(min_val)
 
@@ -869,11 +872,13 @@ def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, NO
             result = {
                 'our_model_selections': max_list,
                 'random_model': random_list,
+                'greedy_selection': greedy_selection,
                 'min_overlaps': min_val,
                 'time_elapsed': time_elapsed,
                 'nodes': NOD,
                 'number_of_filters': NUMBER_OF_FILTERS,
                 'DIM': DIM,
+                'K': K
             }
             results.append(result)
 
@@ -884,7 +889,7 @@ def data_selectivity(env, nodes, PACKET_NUMBER, PACKET_THRESHOLD, data_df, K, NO
 
     # Convert results list to DataFrame and save to CSV
     df = pd.DataFrame(results)
-    df.to_csv('Results/results_2_2.csv', mode='a', header=False, index=False)
+    df.to_csv('Results/greedy_results.csv', mode='a', header=True, index=False)
 
     yield env.timeout(1)
 
@@ -893,7 +898,7 @@ if __name__ == '__main__':
     """
     @DESC: Main function to run the simulation with different sets of constants.
     """
-    constants_df = constants_df = pd.read_csv('Constants/constants_4.csv')
+    constants_df = constants_df = pd.read_csv('Constants/constants_greedy.csv')
 
     for index, row in constants_df.iterrows():
 
