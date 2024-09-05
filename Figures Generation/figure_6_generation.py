@@ -4,7 +4,7 @@ import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 
 # Step 1: Load the data
-data = pd.read_csv('results_5.csv', header=None, names=[
+data = pd.read_csv('/Results/results_5.csv', header=None, names=[
                    'model', 'random', 'worst_overlap', 'time', 'nodes', 'k'])
 
 # Step 2: Parse the arrays from the strings

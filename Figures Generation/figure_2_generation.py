@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Step 1: Load the data
-data = pd.read_csv('200N_5K.csv', header=None, names=['model', 'random', 'worst_overlap', 'time', 'dimension'])
+data = pd.read_csv('/Results/200N_5K.csv', header=None, names=['model', 'random', 'worst_overlap', 'time', 'dimension'])
 
 # Step 2: Parse the arrays from the strings
 data['model'] = data['model'].apply(lambda x: list(map(float, x.strip('[]').split(', '))))
