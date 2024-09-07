@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 
 # Step 1: Load the data
-data = pd.read_csv('200_greedy_k20_diff_dim.csv', sep=',', header=None, names=['our_model_selections', 'random_model', 'greedy_selection', 'min_overlaps', 'time', 'nodes','number_of_filters', 'DIM', 'K'])
+data = pd.read_csv('200_greedy_k40_diff_dim.csv', sep=',', header=None, names=['our_model_selections', 'random_model', 'greedy_selection', 'min_overlaps', 'time', 'nodes','number_of_filters', 'DIM', 'K'])
 
 # Step 2: Parse the arrays from the strings
 data['our_model_selections'] = data['our_model_selections'].apply(lambda x: list(map(float, x.strip('[]').split(', '))))
@@ -73,7 +73,7 @@ plt.yticks(fontsize=12)
 plt.tick_params(axis='both', which='major', labelsize=12)
 
 # Save the figure as .eps
-plt.savefig('Figures/Greedy/plot_200_nodes_diff_num_dimensions.eps', format='eps', bbox_inches="tight")
+plt.savefig('Figures/Greedy/plot_200_nodes_diff_num_dimensions_k40.eps', format='eps', bbox_inches="tight")
 
 # Display the plot
 plt.show()

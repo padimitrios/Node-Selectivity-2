@@ -42,7 +42,7 @@ def extract_overlaps(file_name, number_of_nodes):
 
 
 # Extract overlaps for 200 nodes
-overlaps_200 = extract_overlaps('200_greedy_k20_diff_filt.csv', 200)
+overlaps_200 = extract_overlaps('200_greedy_k40_diff_filt.csv', 200)
 
 # Plotting for 200 nodes
 plt.figure(figsize=(16, 6))  # Increase figure size horizontally
@@ -76,7 +76,7 @@ plt.tight_layout(rect=[0, 0, 1, 1])  # Adjust the layout
 # Position legend inside the graph, at the bottom
 plt.legend()
 
-plt.savefig('Figures/Greedy/plot_200_nodes_diff_num_filters.eps',
+plt.savefig('Figures/Greedy/plot_200_nodes_diff_num_filters_k40.eps',
             format='eps', bbox_inches="tight")
 plt.show()
 plt.close()
