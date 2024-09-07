@@ -6,11 +6,12 @@ import ast
 
 def extract_overlaps(file_name, number_of_nodes):
     data = pd.read_csv(file_name, header=None, names=[
-        'model', 'random', 'worst_overlap', 'time', 'nodes', 'filters'])
+        'model', 'random', 'greedy_selection', 'worst_overlap', 'time', 'nodes', 'filters', 'DIM', 'K'])
 
     # Convert string representations of lists to actual lists
     data['model'] = data['model'].apply(lambda x: ast.literal_eval(x))
     data['random'] = data['random'].apply(lambda x: ast.literal_eval(x))
+    data['greedy_selection'] = data['greedy_selection'].apply(lambda x: ast.literal_eval(x))
 
     # Filter data based on number_of_nodes
     data_filtered = data[data['nodes'] == number_of_nodes]
@@ -25,12 +26,15 @@ def extract_overlaps(file_name, number_of_nodes):
                                     for lst in data_filters['model']])
         random_model_avg = np.mean([np.mean(lst)
                                    for lst in data_filters['random']])
+        greedy_selection_avg = np.mean([np.mean(lst)
+                                        for lst in data_filters ['greedy_selection']])
         worst_case_avg = np.mean(data_filters['worst_overlap'])
 
         averages[num_filters] = {
             'best_case': best_case,
             'our_selection': our_selection_avg,
             'random_model': random_model_avg,
+            'greedy_selection': greedy_selection_avg,
             'worst_case': worst_case_avg
         }
 
@@ -38,7 +42,7 @@ def extract_overlaps(file_name, number_of_nodes):
 
 
 # Extract overlaps for 200 nodes
-overlaps_200 = extract_overlaps('/Results/results_4.csv', 200)
+overlaps_200 = extract_overlaps('200_greedy_k20_diff_filt.csv', 200)
 
 # Plotting for 200 nodes
 plt.figure(figsize=(16, 6))  # Increase figure size horizontally
@@ -47,12 +51,15 @@ filters = [10, 30, 50]
 best_overlap = [overlaps_200[f]['best_case'] for f in filters]
 our_method = [overlaps_200[f]['our_selection'] for f in filters]
 random_model = [overlaps_200[f]['random_model'] for f in filters]
+greedy_selection = [overlaps_200[f]['greedy_selection'] for f in filters]
 worst_overlap = [overlaps_200[f]['worst_case'] for f in filters]
 
 plt.plot(filters, best_overlap, linestyle='-',
          marker='o', color='g', label='Best Case')
 plt.plot(filters, our_method, linestyle='-',
          marker='o', color='b', label='Proposed Method')
+plt.plot(filters, greedy_selection, linestyle='-',
+            marker='o', color='c', label='Greedy Selection')
 plt.plot(filters, random_model, linestyle='-', marker='o',
          color='m', label='Random Migration Model')
 plt.plot(filters, worst_overlap, linestyle='-',
@@ -67,10 +74,9 @@ plt.grid(True)
 plt.tight_layout(rect=[0, 0, 1, 1])  # Adjust the layout
 
 # Position legend inside the graph, at the bottom
-plt.legend(loc='upper center', bbox_to_anchor=(
-    0.5, 1), ncol=2, prop={'size': 12})
+plt.legend()
 
-plt.savefig('Figures/plot_200_nodes_diff_num_filters.eps',
+plt.savefig('Figures/Greedy/plot_200_nodes_diff_num_filters.eps',
             format='eps', bbox_inches="tight")
 plt.show()
 plt.close()
