@@ -78,7 +78,10 @@ ax.tick_params(axis='both', which='major', labelsize=11)
 # Rotate the plot to better visualize the relationship
 ax.view_init(elev=25, azim=140)
 
+# Adjust layout before saving
+plt.tight_layout()
+
 # Save the plot as EPS with a custom filename
-plt.savefig('Figures/nodes_above_theta.eps', format='eps', bbox_inches="tight")
+plt.savefig('Figures/nodes_above_theta.eps', format='eps')
 
 plt.show()
