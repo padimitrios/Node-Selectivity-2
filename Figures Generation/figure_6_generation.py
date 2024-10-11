@@ -4,7 +4,7 @@ import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 
 # Step 1: Load the data
-data = pd.read_csv('/Results/results_5.csv', header=None, names=[
+data = pd.read_csv('../Results/results_5.csv', header=None, names=[
                    'model', 'random', 'worst_overlap', 'time', 'nodes', 'k'])
 
 # Step 2: Parse the arrays from the strings
@@ -68,8 +68,8 @@ ax = fig.add_subplot(111, projection='3d')
 surf = ax.plot_surface(K_mesh, Theta_mesh, Z, cmap='viridis')
 
 # Set the labels with adjusted font sizes
-ax.set_xlabel('K Values', fontsize=12)
-ax.set_ylabel('Theta Values', fontsize=12)
+ax.set_xlabel('K', fontsize=12)
+ax.set_ylabel('Theta', fontsize=12)
 ax.set_zlabel('Nodes Selected', fontsize=12)
 
 # Set tick parameters with adjusted label sizes
